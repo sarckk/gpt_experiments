@@ -19,48 +19,65 @@ chrome.bookmarks.getTree(function (bookmarkTreeNodes) {
         button.textContent = 'Index this document';
         li.appendChild(button);
 
-        button.addEventListener('click', function () {
-            spinner.classList.add('spinner');
-            spinner.textContent = '';
-            li.appendChild(spinner);
+        createButtonEventListener(li, spinner);
 
-            fetch(bookmark.url)
-                .then(response => response.text())
-                .then(text => {
-                    const data = {
-                        "text": text
-                    };
-                    const options = {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer <API_KEY>'
-                        },
-                        body: JSON.stringify(data)
-                    };
-                    fetch('https://api.openai.com/v1/engines/davinci-codex/embeddings', options)
-                        .then(response => response.json())
-                        .then(data => {
-                            const embeddings = data.embeddings;
-                            const options = {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'api-key': '<API_KEY>'
-                                },
-                                body: JSON.stringify(embeddings)
-                            };
-                            fetch('https://api.pinecone.io/v1/vector-indexes/<INDEX_NAME>/vectors', options)
-                                .then(response => response.json())
-                                .then(data => console.log(data))
-                                .catch(error => showError(spinner, error));
-                        })
-                        .catch(error => showError(spinner, error));
-                })
-                .catch(error => showError(spinner, error));
-        });
     }
 });
+
+function createButtonEventListener(li, spinner) {
+    const error = document.createElement('span');
+    error.className = 'error';
+
+    const button = li.querySelector('.index-button');
+
+    button.addEventListener('click', function () {
+        spinner.classList.add('spinner');
+        spinner.textContent = '';
+        li.appendChild(spinner);
+
+        fetch(bookmark.url)
+            .then(response => response.text())
+            .then(text => {
+                const data = {
+                    "text": text
+                };
+                const options = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer <API_KEY>'
+                    },
+                    body: JSON.stringify(data)
+                };
+                fetch('https://api.openai.com/v1/engines/davinci-codex/embeddings', options)
+                    .then(response => response.json())
+                    .then(data => {
+                        const embeddings = data.embeddings;
+                        const options = {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'api-key': '<API_KEY>'
+                            },
+                            body: JSON.stringify(embeddings)
+                        };
+                        fetch('https://api.pinecone.io/v1/vector-indexes/<INDEX_NAME>/vectors', options)
+                            .then(response => response.json())
+                            .then(data => console.log(data))
+                            .catch(error => showError(spinner, error));
+                    })
+                    .catch(error => showError(spinner, error));
+            })
+            .catch(error => showError(spinner, error));
+
+        function showError(spinner, error) {
+            spinner.classList.remove('spinner');
+            spinner.classList.add('error');
+            spinner.textContent = error.message;
+            console.error(error);
+        }
+    });
+}
 
 function getBookmarks(bookmarkTreeNodes) {
     var bookmarks = [];
@@ -76,11 +93,4 @@ function getBookmarks(bookmarkTreeNodes) {
     }
 
     return bookmarks;
-}
-
-function showError(spinner, error) {
-    spinner.classList.remove('spinner');
-    spinner.classList.add('error');
-    spinner.textContent = error.message;
-    console.error(error);
 }
