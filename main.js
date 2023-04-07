@@ -1,11 +1,11 @@
-chrome.bookmarks.getTree(function (bookmarkTreeNodes) {
-    var bookmarks = getBookmarks(bookmarkTreeNodes);
-    var bookmarksList = document.getElementById('bookmarks');
+chrome.bookmarks.getTree((bookmarkTreeNodes) => {
+    const bookmarks = getBookmarks(bookmarkTreeNodes);
+    const bookmarksList = document.getElementById('bookmarks');
 
-    for (var i = 0; i < bookmarks.length; i++) {
-        var bookmark = bookmarks[i];
-        var li = document.createElement('li');
-        var a = document.createElement('a');
+    for (let i = 0; i < bookmarks.length; i++) {
+        const bookmark = bookmarks[i];
+        const li = document.createElement('li');
+        const a = document.createElement('a');
         a.href = bookmark.url;
         a.textContent = bookmark.title;
         li.appendChild(a);
@@ -30,7 +30,7 @@ function createButtonEventListener(li, spinner, bookmark) {
 
     const button = li.querySelector('.index-button');
 
-    button.addEventListener('click', function () {
+    button.addEventListener('click', () => {
         spinner.classList.add('spinner');
         spinner.textContent = '';
         li.appendChild(spinner);
@@ -80,10 +80,10 @@ function createButtonEventListener(li, spinner, bookmark) {
 }
 
 function getBookmarks(bookmarkTreeNodes) {
-    var bookmarks = [];
+    let bookmarks = [];
 
-    for (var i = 0; i < bookmarkTreeNodes.length; i++) {
-        var node = bookmarkTreeNodes[i];
+    for (let i = 0; i < bookmarkTreeNodes.length; i++) {
+        let node = bookmarkTreeNodes[i];
 
         if (node.children) {
             bookmarks = bookmarks.concat(getBookmarks(node.children));
