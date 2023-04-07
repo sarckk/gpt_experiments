@@ -19,12 +19,12 @@ chrome.bookmarks.getTree(function (bookmarkTreeNodes) {
         button.textContent = 'Index this document';
         li.appendChild(button);
 
-        createButtonEventListener(li, spinner);
+        createButtonEventListener(li, spinner, bookmark);
 
     }
 });
 
-function createButtonEventListener(li, spinner) {
+function createButtonEventListener(li, spinner, bookmark) {
     const error = document.createElement('span');
     error.className = 'error';
 
