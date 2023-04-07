@@ -1,0 +1,37 @@
+Hi, I'm currently working on a Chrome extension where the user can run semantic Q&A against their bookmarks.
+You are a coding assitant helping me out with this project. Output the code followed by your explanation of what it does.
+
+I currently have a main.js file that looks like this:
+
+chrome.bookmarks.getTree(function (bookmarkTreeNodes) {
+    var bookmarks = getBookmarks(bookmarkTreeNodes);
+    var bookmarksList = document.getElementById('bookmarks');
+
+    for (var i = 0; i < bookmarks.length; i++) {
+        var bookmark = bookmarks[i];
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+        a.href = bookmark.url;
+        a.textContent = bookmark.title;
+        li.appendChild(a);
+        bookmarksList.appendChild(li);
+    }
+});
+
+function getBookmarks(bookmarkTreeNodes) {
+    var bookmarks = [];
+
+    for (var i = 0; i < bookmarkTreeNodes.length; i++) {
+        var node = bookmarkTreeNodes[i];
+
+        if (node.children) {
+            bookmarks = bookmarks.concat(getBookmarks(node.children));
+        } else if (node.url) {
+            bookmarks.push(node);
+        }
+    }
+
+    return bookmarks;
+}
+
+The code fetches all of user's bookmarks. Now I want to add a feature whereby for each bookmark, we want to retrieve the relevant text code from the webpage that the url points to, use the OpenAI Embedding API to generate vector embeddings of this document, and upload those vector embeddings into Pinecone vector database, so that we can later run Q&A against those text embeddings.
